@@ -1,0 +1,120 @@
+
+import React from 'react';
+import type { Student, Exercise, WorkoutPlan, DietPlan } from './types';
+
+export const ICONS = {
+  dashboard: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>,
+  students: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+  workouts: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+  diet: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M4 17v4M2 19h4M17 3v4M15 5h4M18 17v4M16 19h4" transform="scale(0.8) translate(3,3)"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" transform="scale(0.4) translate(18,0)" /></svg>,
+  messages: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>,
+  settings: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+  sun: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>,
+  moon: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>,
+  logo: <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>,
+  search: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+  bell: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>,
+  ai: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-5.523 0-10 4.477-10 10s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zM12 4c1.105 0 2 .895 2 2s-.895 2-2 2-2-.895-2-2 .895-2 2-2zm0 16c-4.418 0-8-3.582-8-8 0-1.012.204-1.96.556-2.822l1.109 1.109C5.23 11.83 5 12.89 5 14c0 3.86 3.14 7 7 7s7-3.14 7-7c0-1.11-.23-2.17-.645-3.113l1.109-1.109c.352.862.556 1.81.556 2.822 0 4.418-3.582 8-8 8zm-2-8h4v4h-4v-4zm-2-2h8v2h-8v-2z" /></svg>,
+};
+
+
+export const MOCK_EXERCISES: Exercise[] = [
+  { id: 'ex1', name: 'Bench Press', description: 'Lay on a bench and press a barbell up from your chest.' },
+  { id: 'ex2', name: 'Squat', description: 'Lower your hips from a standing position and then stand back up.' },
+  { id: 'ex3', name: 'Deadlift', description: 'Lift a loaded barbell off the floor to a standing position.' },
+  { id: 'ex4', name: 'Overhead Press', description: 'Press a barbell or dumbbells from shoulders to overhead.' },
+  { id: 'ex5', name: 'Pull-up', description: 'Pull your body up until your chin is over the bar.' },
+  { id: 'ex6', name: 'Bicep Curl', description: 'Flex your elbow to lift a weight towards your shoulder.' },
+  { id: 'ex7', name: 'Tricep Extension', description: 'Extend your elbow to push a weight away.' },
+  { id: 'ex8', name: 'Leg Press', description: 'Push a weight away from you using your legs.' },
+  { id: 'ex9', name: 'Plank', description: 'Hold a push-up position, resting on your forearms.' },
+];
+
+export const MOCK_WORKOUT_PLANS: WorkoutPlan[] = [
+    {
+        id: 'wp1',
+        name: 'Full Body Strength - Phase 1',
+        days: {
+            'Monday': [
+                { exercise: MOCK_EXERCISES[1], sets: 3, reps: '8-12', rest: '60s' },
+                { exercise: MOCK_EXERCISES[0], sets: 3, reps: '8-12', rest: '60s' },
+                { exercise: MOCK_EXERCISES[4], sets: 3, reps: 'As many as possible', rest: '90s' },
+            ],
+            'Wednesday': [
+                { exercise: MOCK_EXERCISES[2], sets: 3, reps: '5', rest: '120s' },
+                { exercise: MOCK_EXERCISES[3], sets: 3, reps: '8-12', rest: '60s' },
+                { exercise: MOCK_EXERCISES[8], sets: 3, reps: '60s hold', rest: '60s' },
+            ],
+            'Friday': [
+                { exercise: MOCK_EXERCISES[7], sets: 4, reps: '10-15', rest: '45s' },
+                { exercise: MOCK_EXERCISES[5], sets: 4, reps: '10-15', rest: '45s' },
+                { exercise: MOCK_EXERCISES[6], sets: 4, reps: '10-15', rest: '45s' },
+            ]
+        }
+    }
+];
+
+export const MOCK_DIET_PLANS: DietPlan[] = [
+    {
+        id: 'dp1',
+        name: 'High Protein Cutting',
+        meals: [
+            { name: 'Breakfast', time: '08:00', description: 'Oats with whey protein and berries.', calories: 450, macros: { protein: 40, carbs: 50, fat: 10 } },
+            { name: 'Lunch', time: '12:30', description: 'Grilled chicken breast, quinoa, and steamed vegetables.', calories: 600, macros: { protein: 50, carbs: 60, fat: 15 } },
+            { name: 'Snack', time: '16:00', description: 'Greek yogurt with almonds.', calories: 300, macros: { protein: 25, carbs: 15, fat: 15 } },
+            { name: 'Dinner', time: '19:30', description: 'Salmon with sweet potato and asparagus.', calories: 550, macros: { protein: 45, carbs: 40, fat: 20 } },
+        ]
+    }
+];
+
+export const MOCK_STUDENTS: Student[] = [
+  {
+    id: 's1',
+    name: 'Jane Doe',
+    email: 'jane.doe@example.com',
+    avatarUrl: 'https://picsum.photos/seed/jane/200/200',
+    plan: 'Premium Monthly',
+    status: 'Active',
+    lastActive: '2 hours ago',
+    workoutPlanId: 'wp1',
+    dietPlanId: 'dp1',
+    progressPhotos: [
+        { id: 'p1', date: '2023-01-15', url: 'https://picsum.photos/seed/progress1/400/600' },
+        { id: 'p2', date: '2023-02-15', url: 'https://picsum.photos/seed/progress2/400/600' },
+    ],
+    measurements: [
+        { date: '2023-01-01', weight: 70 },
+        { date: '2023-01-15', weight: 69 },
+        { date: '2023-02-01', weight: 68 },
+        { date: '2023-02-15', weight: 67.5 },
+        { date: '2023-03-01', weight: 66 },
+    ]
+  },
+  {
+    id: 's2',
+    name: 'John Smith',
+    email: 'john.smith@example.com',
+    avatarUrl: 'https://picsum.photos/seed/john/200/200',
+    plan: 'Basic Yearly',
+    status: 'Active',
+    lastActive: '1 day ago',
+    workoutPlanId: 'wp1',
+    progressPhotos: [],
+    measurements: [
+      { date: '2023-01-01', weight: 85 },
+      { date: '2023-02-01', weight: 83 },
+      { date: '2023-03-01', weight: 82 },
+    ]
+  },
+  {
+    id: 's3',
+    name: 'Emily White',
+    email: 'emily.white@example.com',
+    avatarUrl: 'https://picsum.photos/seed/emily/200/200',
+    plan: 'Premium Monthly',
+    status: 'Inactive',
+    lastActive: '2 weeks ago',
+    progressPhotos: [],
+    measurements: []
+  },
+];

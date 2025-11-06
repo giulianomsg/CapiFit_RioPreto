@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FitTrack Pro - Trainer Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                DEFAULT: 'hsl(262, 83%, 58%)',
+                foreground: 'hsl(0, 0%, 100%)',
+                'light': 'hsl(262, 83%, 68%)',
+              },
+              secondary: {
+                DEFAULT: 'hsl(220, 13%, 18%)',
+                foreground: 'hsl(0, 0%, 100%)',
+              },
+              dark: {
+                'bg': 'hsl(222, 47%, 11%)',
+                'card': 'hsl(220, 13%, 18%)',
+                'text': 'hsl(210, 40%, 96%)',
+                'subtext': 'hsl(215, 28%, 17%)',
+              },
+              light: {
+                'bg': 'hsl(210, 40%, 98%)',
+                'card': 'hsl(0, 0%, 100%)',
+                'text': 'hsl(222, 47%, 11%)',
+                'subtext': 'hsl(210, 40%, 96%)',
+              }
+            }
+          }
+        }
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.28.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.3.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
