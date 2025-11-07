@@ -1,242 +1,101 @@
-# CapiFit - Hub do Treinador
+# CapiFit - Plataforma Completa para Personal Trainers e Alunos
 
-CapiFit é uma aplicação web completa para personal trainers gerenciarem clientes, criarem planos de treino e dieta, acompanharem o progresso e se comunicarem de forma eficaz. Inclui assistência com tecnologia de IA para a geração de planos.
-
-Esta aplicação é construída com uma arquitetura Cliente-Servidor:
-- **Frontend:** React (Vite) responsável pela interface do usuário.
-- **Backend:** Node.js (Express) que serve uma API RESTful e se comunica com o banco de dados.
+CapiFit é uma plataforma web e mobile completa, projetada para que personal trainers e nutricionistas gerenciem seus alunos, treinos, dietas, avaliações físicas e assinaturas, enquanto os alunos acompanham seu progresso e se comunicam com seus profissionais.
 
 ---
 
-## Guia de Implantação em VPS Ubuntu 24.04.3
+## Arquitetura da Aplicação
 
-Este guia detalha o processo para implantar a aplicação CapiFit no seu próprio servidor usando Nginx, PM2 e PostgreSQL.
+- **Backend:** Node.js (Express) servindo uma API RESTful segura.
+- **Frontend Web:** React (a ser reconstruído para consumir a nova API).
+- **Banco de Dados:** MySQL.
+- **Autenticação:** Tokens JWT (JSON Web Tokens) e criptografia de senhas com bcrypt.
 
-**Domínio de Exemplo:** `capifit.app.br`
+---
 
-### 1. Pré-requisitos do Servidor
+## Guia de Implantação e Desenvolvimento Local
 
-Conecte-se ao seu servidor via SSH e atualize os pacotes do sistema.
+Este guia foca na configuração do ambiente de desenvolvimento para o backend e o banco de dados, que são a fundação do sistema.
 
-```bash
-sudo apt update && sudo apt upgrade -y
-```
+### 1. Pré-requisitos
 
-Instale as dependências necessárias: Node.js (versão 20.x ou superior), npm, Git, PostgreSQL e Nginx.
+- **Node.js:** Versão 20.x ou superior.
+- **NPM:** (Vem com o Node.js).
+- **Git:** Para clonar o repositório.
+- **MySQL:** Um servidor de banco de dados MySQL (pode ser local, via Docker, ou em um serviço de nuvem).
 
-```bash
-# Instalar Node.js e npm
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
+### 2. Configuração do Banco de Dados (MySQL)
 
-# Instalar Git
-sudo apt install git -y
-
-# Instalar PostgreSQL
-sudo apt install postgresql postgresql-contrib -y
-
-# Instalar Nginx
-sudo apt install nginx -y
-
-# Verificar instalações
-node -v
-npm -v
-git --version
-psql --version
-nginx -v
-```
-
-### 2. Configuração do Banco de Dados (PostgreSQL)
-
-1.  Inicie sessão no PostgreSQL para criar o usuário e o banco de dados.
-
-    ```bash
-    sudo -u postgres psql
-    ```
-
-2.  Dentro do prompt do `psql`, execute os seguintes comandos. Substitua `seu_usuario` e `sua_senha_segura` por credenciais de sua escolha.
+1.  **Crie o Banco de Dados:**
+    Acesse seu servidor MySQL e crie um novo banco de dados para o projeto.
 
     ```sql
-    -- Criar um novo usuário (role) com uma senha segura
-    CREATE ROLE seu_usuario WITH LOGIN PASSWORD 'sua_senha_segura';
-
-    -- Dar permissão para o usuário criar bancos de dados
-    ALTER ROLE seu_usuario CREATEDB;
-
-    -- Sair do superusuário postgres
-    \q
+    CREATE DATABASE capifit_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     ```
 
-3.  Faça login como o novo usuário para criar o banco de dados.
+2.  **Crie as Tabelas:**
+    Use o arquivo `database.sql` fornecido na raiz do projeto para criar todas as tabelas e a estrutura inicial. Você pode importar o arquivo usando uma ferramenta como DBeaver, HeidiSQL, ou pela linha de comando:
 
     ```bash
-    psql -U seu_usuario -d postgres
+    mysql -u SEU_USUARIO -p capifit_db < database.sql
     ```
 
-4.  Crie o banco de dados `capifit_db`.
+### 3. Configuração do Backend
 
-    ```sql
-    CREATE DATABASE capifit_db;
-
-    -- Conecte-se ao novo banco de dados para criar as tabelas
-    \c capifit_db
-
-    -- TODO: Adicione aqui seus comandos CREATE TABLE para 'students', 'workout_plans', 'diet_plans', etc.
-    -- Exemplo inicial:
-    CREATE TABLE students (
-        id VARCHAR(255) PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        avatarUrl TEXT,
-        plan VARCHAR(100),
-        status VARCHAR(50),
-        lastActive VARCHAR(100),
-        workoutPlanId VARCHAR(255),
-        dietPlanId VARCHAR(255)
-    );
-
-    -- Sair do psql
-    \q
-    ```
-
-### 3. Clonar e Configurar a Aplicação
-
-1.  Clone o repositório do projeto para um diretório de sua escolha (ex: `/var/www/`).
-
+1.  **Clone o Repositório:**
     ```bash
-    sudo mkdir -p /var/www
-    sudo chown $USER:$USER /var/www
-    cd /var/www
     git clone <URL_DO_SEU_REPOSITORIO_GIT> capifit
-    cd capifit
+    cd capifit/backend
     ```
 
-2.  **Configurar o Backend:**
-
-    Navegue até o diretório do backend e instale as dependências.
-
+2.  **Instale as Dependências:**
     ```bash
-    cd backend
     npm install
     ```
 
-    Crie o arquivo de variáveis de ambiente `.env` a partir do exemplo.
+3.  **Configure as Variáveis de Ambiente:**
+    Crie um arquivo `.env` dentro da pasta `backend` a partir do exemplo fornecido.
 
     ```bash
     cp .env.example .env
     ```
 
-    Edite o arquivo `.env` com suas configurações.
-
-    ```bash
-    nano .env
-    ```
-
-    Preencha com suas credenciais do banco de dados e a chave da API Gemini.
+    Agora, edite o arquivo `.env` e preencha com suas credenciais do banco de dados e segredos da aplicação.
 
     ```ini
-    # Porta para o servidor backend rodar
+    # Configurações do Servidor
     PORT=5000
 
-    # String de conexão do PostgreSQL
-    DATABASE_URL="postgresql://seu_usuario:sua_senha_segura@localhost:5432/capifit_db"
+    # Credenciais do Banco de Dados MySQL
+    DB_HOST="localhost"
+    DB_USER="seu_usuario_mysql"
+    DB_PASSWORD="sua_senha_mysql"
+    DB_NAME="capifit_db"
 
-    # Sua chave da API do Google Gemini
-    API_KEY="SUA_CHAVE_API_AQUI"
+    # Segredos para Autenticação
+    JWT_SECRET="gere_uma_string_aleatoria_e_segura_aqui"
+
+    # Chave da API do Google Gemini (opcional, para funcionalidades de IA)
+    API_KEY="SUA_CHAVE_API_GEMINI_AQUI"
     ```
 
-### 4. Executar em Produção com PM2
+### 4. Executando o Backend
 
-PM2 é um gerenciador de processos que manterá sua aplicação online.
-
-1.  Instale o PM2 globalmente.
-
-    ```bash
-    sudo npm install pm2 -g
-    ```
-
-2.  Inicie o servidor backend com PM2.
-
-    ```bash
-    # Estando no diretório raiz do projeto (/var/www/capifit)
-    pm2 start backend/server.js --name capifit-api
-    ```
-
-3.  Configure o PM2 para iniciar automaticamente na reinicialização do servidor.
-
-    ```bash
-    pm2 startup
-    # Siga as instruções que o comando acima fornecer
-    pm2 save
-    ```
-
-### 5. Configurar o Nginx como Proxy Reverso
-
-O Nginx servirá os arquivos estáticos do frontend e redirecionará as chamadas de API para o backend Node.js.
-
-1.  Crie um novo arquivo de configuração do Nginx para o seu domínio.
-
-    ```bash
-    sudo nano /etc/nginx/sites-available/capifit.app.br
-    ```
-
-2.  Cole a seguinte configuração no arquivo. Certifique-se de que `root` aponta para o diretório raiz do seu projeto.
-
-    ```nginx
-    server {
-        listen 80;
-        server_name capifit.app.br www.capifit.app.br;
-
-        # Localização dos arquivos do frontend
-        root /var/www/capifit;
-        index index.html;
-
-        location / {
-            # Tenta encontrar o arquivo solicitado, senão retorna o index.html (para o React Router funcionar)
-            try_files $uri $uri/ /index.html;
-        }
-
-        # Redireciona todas as requisições /api para o backend
-        location /api/ {
-            proxy_pass http://localhost:5000; # A porta deve ser a mesma do seu .env
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection 'upgrade';
-            proxy_set_header Host $host;
-            proxy_cache_bypass $http_upgrade;
-        }
-    }
-    ```
-
-3.  Ative a configuração criando um link simbólico.
-
-    ```bash
-    sudo ln -s /etc/nginx/sites-available/capifit.app.br /etc/nginx/sites-enabled/
-    ```
-
-4.  Remova o link de configuração padrão se ele existir.
-
-    ```bash
-    sudo rm /etc/nginx/sites-enabled/default
-    ```
-
-5.  Teste a configuração do Nginx e reinicie o serviço.
-
-    ```bash
-    sudo nginx -t
-    # Se mostrar "syntax is ok" e "test is successful", prossiga.
-    sudo systemctl restart nginx
-    ```
-
-### 6. (Recomendado) Proteger com SSL (HTTPS)
-
-Use o Certbot para obter um certificado SSL gratuito da Let's Encrypt.
+Com o banco de dados e o `.env` configurados, você pode iniciar o servidor backend.
 
 ```bash
-sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d capifit.app.br -d www.capifit.app.br
+# Dentro da pasta /backend
+npm start
 ```
 
-Siga as instruções na tela. O Certbot irá configurar automaticamente o SSL e renovar o certificado quando necessário.
+O servidor estará rodando em `http://localhost:5000`. Agora você pode usar uma ferramenta como Postman ou Insomnia para testar os endpoints da API (ex: `POST /api/auth/register`).
 
-**Pronto!** Sua aplicação CapiFit deve estar acessível em `https://capifit.app.br`.
+### 5. Desenvolvimento do Frontend
+
+O frontend (localizado na pasta raiz) pode ser iniciado com os comandos padrão do React/Vite, mas lembre-se que ele precisará ser reconstruído para se comunicar com a nova estrutura da API.
+
+```bash
+# Na pasta raiz do projeto
+npm install
+# (depois de instalar, o comando para rodar pode variar, mas geralmente é `npm run dev` ou similar)
+```
