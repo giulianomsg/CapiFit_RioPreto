@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { MOCK_STUDENTS } from '../constants';
-import type { Student } from '../types';
+import type { Student, WorkoutPlan, DietPlan } from '../types';
 import { StudentDetail } from './StudentDetail';
+import { AddStudentModal } from './AddStudentModal';
 
 const StudentCard: React.FC<{ student: Student; onSelect: (student: Student) => void }> = ({ student, onSelect }) => (
   <div
@@ -22,26 +22,53 @@ const StudentCard: React.FC<{ student: Student; onSelect: (student: Student) => 
   </div>
 );
 
-export const Students: React.FC = () => {
+interface StudentsProps {
+    students: Student[];
+    workoutPlans: WorkoutPlan[];
+    dietPlans: DietPlan[];
+    onAddStudent: (studentData: Omit<Student, 'id' | 'progressPhotos' | 'measurements'>) => void;
+    onAssignWorkoutPlan: (studentId: string, plan: { name: string; details: string }) => void;
+    onAssignDietPlan: (studentId: string, plan: { name: string; details: string }) => void;
+}
+
+export const Students: React.FC<StudentsProps> = ({ students, workoutPlans, dietPlans, onAddStudent, onAssignWorkoutPlan, onAssignDietPlan }) => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [isAddModalOpen, setAddModalOpen] = useState(false);
 
   if (selectedStudent) {
-    return <StudentDetail student={selectedStudent} onBack={() => setSelectedStudent(null)} />;
+    return <StudentDetail 
+              student={selectedStudent} 
+              onBack={() => setSelectedStudent(null)} 
+              workoutPlans={workoutPlans}
+              dietPlans={dietPlans}
+              onAssignWorkoutPlan={onAssignWorkoutPlan}
+              onAssignDietPlan={onAssignDietPlan}
+           />;
   }
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Seus Alunos</h2>
-        <button className="bg-primary text-primary-foreground font-semibold py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors">
+        <button onClick={() => setAddModalOpen(true)} className="bg-primary text-primary-foreground font-semibold py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors">
           + Adicionar Aluno
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {MOCK_STUDENTS.map(student => (
-          <StudentCard key={student.id} student={student} onSelect={setSelectedStudent} />
-        ))}
-      </div>
+
+      {students.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          {students.map(student => (
+            <StudentCard key={student.id} student={student} onSelect={setSelectedStudent} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 bg-light-card dark:bg-dark-card rounded-xl">
+            <h3 className="text-xl font-semibold">Nenhum aluno encontrado</h3>
+            <p className="text-gray-500 dark:text-gray-400 mt-2">Clique em "+ Adicionar Aluno" para começar a cadastrar seus clientes.</p>
+        </div>
+      )}
+
+      {isAddModalOpen && <AddStudentModal onAddStudent={onAddStudent} onClose={() => setAddModalOpen(false)} />}
     </div>
   );
 };

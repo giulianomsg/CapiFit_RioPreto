@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
-import type { Student } from '../types';
-import { MOCK_WORKOUT_PLANS, MOCK_DIET_PLANS } from '../constants';
+import type { Student, WorkoutPlan, DietPlan } from '../types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { PlanCreator } from './PlanCreator';
 
@@ -10,6 +9,10 @@ type Tab = 'Perfil' | 'Treino' | 'Dieta' | 'Progresso' | 'Chat';
 interface StudentDetailProps {
   student: Student;
   onBack: () => void;
+  workoutPlans: WorkoutPlan[];
+  dietPlans: DietPlan[];
+  onAssignWorkoutPlan: (studentId: string, plan: { name: string; details: string }) => void;
+  onAssignDietPlan: (studentId: string, plan: { name: string; details: string }) => void;
 }
 
 const TabButton: React.FC<{ label: Tab; activeTab: Tab; onClick: (tab: Tab) => void }> = ({ label, activeTab, onClick }) => (
@@ -25,14 +28,24 @@ const TabButton: React.FC<{ label: Tab; activeTab: Tab; onClick: (tab: Tab) => v
     </button>
 );
 
-export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack }) => {
+export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack, workoutPlans, dietPlans, onAssignWorkoutPlan, onAssignDietPlan }) => {
     const [activeTab, setActiveTab] = useState<Tab>('Perfil');
     const [isWorkoutModalOpen, setWorkoutModalOpen] = useState(false);
     const [isDietModalOpen, setDietModalOpen] = useState(false);
 
-    const workoutPlan = MOCK_WORKOUT_PLANS.find(p => p.id === student.workoutPlanId);
-    const dietPlan = MOCK_DIET_PLANS.find(p => p.id === student.dietPlanId);
+    const workoutPlan = workoutPlans.find(p => p.id === student.workoutPlanId);
+    const dietPlan = dietPlans.find(p => p.id === student.dietPlanId);
     
+    const handleSaveWorkout = (plan: {name: string, details: string}) => {
+        onAssignWorkoutPlan(student.id, plan);
+        setWorkoutModalOpen(false);
+    }
+
+    const handleSaveDiet = (plan: {name: string, details: string}) => {
+        onAssignDietPlan(student.id, plan);
+        setDietModalOpen(false);
+    }
+
     const renderContent = () => {
         switch (activeTab) {
             case 'Perfil':
@@ -54,15 +67,9 @@ export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack })
                             </button>
                         </div>
                         {workoutPlan ? (
-                            <div className="space-y-4">
-                                {Object.entries(workoutPlan.days).map(([day, sets]) => (
-                                    <div key={day}>
-                                        <h4 className="font-bold text-lg mb-2">{day}</h4>
-                                        <ul className="list-disc list-inside space-y-1">
-                                            {sets.map((s, i) => <li key={i}>{s.exercise.name}: {s.sets} séries de {s.reps}</li>)}
-                                        </ul>
-                                    </div>
-                                ))}
+                             <div className="p-4 bg-light-bg dark:bg-dark-bg rounded-lg whitespace-pre-wrap">
+                                <h4 className="font-bold text-lg mb-2">{workoutPlan.name}</h4>
+                                <p>{workoutPlan.details}</p>
                             </div>
                         ) : <p>Nenhum plano de treino atribuído.</p>}
                     </div>
@@ -77,13 +84,9 @@ export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack })
                             </button>
                         </div>
                         {dietPlan ? (
-                             <div className="space-y-4">
-                                {dietPlan.meals.map((meal, i) => (
-                                    <div key={i} className="p-3 bg-light-bg dark:bg-dark-bg rounded-lg">
-                                        <p className="font-bold">{meal.time} - {meal.name}</p>
-                                        <p className="text-sm">{meal.description}</p>
-                                    </div>
-                                ))}
+                            <div className="p-4 bg-light-bg dark:bg-dark-bg rounded-lg whitespace-pre-wrap">
+                                <h4 className="font-bold text-lg mb-2">{dietPlan.name}</h4>
+                                <p>{dietPlan.details}</p>
                             </div>
                         ) : <p>Nenhum plano de dieta atribuído.</p>}
                     </div>
@@ -132,8 +135,8 @@ export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack })
             
             <div>{renderContent()}</div>
 
-            {isWorkoutModalOpen && <PlanCreator type="Workout" studentName={student.name} onClose={() => setWorkoutModalOpen(false)} />}
-            {isDietModalOpen && <PlanCreator type="Diet" studentName={student.name} onClose={() => setDietModalOpen(false)} />}
+            {isWorkoutModalOpen && <PlanCreator type="Workout" studentName={student.name} onClose={() => setWorkoutModalOpen(false)} onSave={handleSaveWorkout} />}
+            {isDietModalOpen && <PlanCreator type="Diet" studentName={student.name} onClose={() => setDietModalOpen(false)} onSave={handleSaveDiet} />}
         </div>
     );
 };

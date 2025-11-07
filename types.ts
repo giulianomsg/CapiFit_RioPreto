@@ -18,9 +18,10 @@ export interface WorkoutSet {
 export interface WorkoutPlan {
   id: string;
   name: string;
-  days: {
+  days?: {
     [day: string]: WorkoutSet[]; // e.g., "Monday", "Tuesday"
   };
+  details?: string;
 }
 
 export interface Meal {
@@ -38,7 +39,8 @@ export interface Meal {
 export interface DietPlan {
   id: string;
   name: string;
-  meals: Meal[];
+  meals?: Meal[];
+  details?: string;
 }
 
 export interface ProgressPhoto {
