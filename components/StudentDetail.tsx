@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
 import type { Student } from '../types';
-import { MOCK_WORKOUT_PLANS, MOCK_DIET_PLANS, ICONS } from '../constants';
+import { MOCK_WORKOUT_PLANS, MOCK_DIET_PLANS } from '../constants';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { PlanCreator } from './PlanCreator';
 
-type Tab = 'Profile' | 'Workout' | 'Diet' | 'Progress' | 'Chat';
+type Tab = 'Perfil' | 'Treino' | 'Dieta' | 'Progresso' | 'Chat';
 
 interface StudentDetailProps {
   student: Student;
@@ -26,7 +26,7 @@ const TabButton: React.FC<{ label: Tab; activeTab: Tab; onClick: (tab: Tab) => v
 );
 
 export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack }) => {
-    const [activeTab, setActiveTab] = useState<Tab>('Profile');
+    const [activeTab, setActiveTab] = useState<Tab>('Perfil');
     const [isWorkoutModalOpen, setWorkoutModalOpen] = useState(false);
     const [isDietModalOpen, setDietModalOpen] = useState(false);
 
@@ -35,22 +35,22 @@ export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack })
     
     const renderContent = () => {
         switch (activeTab) {
-            case 'Profile':
+            case 'Perfil':
                 return (
                     <div>
-                        <h3 className="text-xl font-bold mb-4">Client Information</h3>
+                        <h3 className="text-xl font-bold mb-4">Informações do Cliente</h3>
                         <p><strong>Email:</strong> {student.email}</p>
-                        <p><strong>Plan:</strong> {student.plan}</p>
-                        <p><strong>Status:</strong> {student.status}</p>
+                        <p><strong>Plano:</strong> {student.plan}</p>
+                        <p><strong>Status:</strong> {student.status === 'Active' ? 'Ativo' : 'Inativo'}</p>
                     </div>
                 );
-            case 'Workout':
+            case 'Treino':
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold">Workout Plan</h3>
+                            <h3 className="text-xl font-bold">Plano de Treino</h3>
                             <button onClick={() => setWorkoutModalOpen(true)} className="bg-primary text-primary-foreground font-semibold py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors">
-                                {workoutPlan ? 'Edit Plan' : '+ Assign Plan'}
+                                {workoutPlan ? 'Editar Plano' : '+ Atribuir Plano'}
                             </button>
                         </div>
                         {workoutPlan ? (
@@ -59,21 +59,21 @@ export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack })
                                     <div key={day}>
                                         <h4 className="font-bold text-lg mb-2">{day}</h4>
                                         <ul className="list-disc list-inside space-y-1">
-                                            {sets.map((s, i) => <li key={i}>{s.exercise.name}: {s.sets} sets of {s.reps}</li>)}
+                                            {sets.map((s, i) => <li key={i}>{s.exercise.name}: {s.sets} séries de {s.reps}</li>)}
                                         </ul>
                                     </div>
                                 ))}
                             </div>
-                        ) : <p>No workout plan assigned.</p>}
+                        ) : <p>Nenhum plano de treino atribuído.</p>}
                     </div>
                 );
-             case 'Diet':
+             case 'Dieta':
                 return (
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold">Diet Plan</h3>
+                            <h3 className="text-xl font-bold">Plano de Dieta</h3>
                             <button onClick={() => setDietModalOpen(true)} className="bg-primary text-primary-foreground font-semibold py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors">
-                                {dietPlan ? 'Edit Plan' : '+ Assign Plan'}
+                                {dietPlan ? 'Editar Plano' : '+ Atribuir Plano'}
                             </button>
                         </div>
                         {dietPlan ? (
@@ -85,13 +85,13 @@ export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack })
                                     </div>
                                 ))}
                             </div>
-                        ) : <p>No diet plan assigned.</p>}
+                        ) : <p>Nenhum plano de dieta atribuído.</p>}
                     </div>
                 );
-            case 'Progress':
+            case 'Progresso':
                 return (
                     <div>
-                        <h3 className="text-xl font-bold mb-4">Weight Progression</h3>
+                        <h3 className="text-xl font-bold mb-4">Progressão de Peso</h3>
                         <div style={{ width: '100%', height: 300 }}>
                            <ResponsiveContainer>
                                 <LineChart data={student.measurements} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -100,20 +100,20 @@ export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack })
                                     <YAxis />
                                     <Tooltip contentStyle={{ backgroundColor: '#333', border: 'none' }} />
                                     <Legend />
-                                    <Line type="monotone" dataKey="weight" stroke="#8884d8" activeDot={{ r: 8 }} />
+                                    <Line type="monotone" dataKey="weight" name="Peso (kg)" stroke="#8884d8" activeDot={{ r: 8 }} />
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
                     </div>
                 );
             default:
-                return <div>Content for {activeTab}</div>;
+                return <div>Conteúdo para {activeTab}</div>;
         }
     };
     
     return (
         <div className="bg-light-card dark:bg-dark-card p-6 rounded-xl shadow-md">
-            <button onClick={onBack} className="text-primary font-semibold mb-4">&larr; Back to all students</button>
+            <button onClick={onBack} className="text-primary font-semibold mb-4">&larr; Voltar para todos os alunos</button>
             <div className="flex items-center space-x-4 mb-6">
                 <img src={student.avatarUrl} alt={student.name} className="w-20 h-20 rounded-full object-cover"/>
                 <div>
@@ -124,7 +124,7 @@ export const StudentDetail: React.FC<StudentDetailProps> = ({ student, onBack })
 
             <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
                 <nav className="-mb-px flex space-x-4">
-                    {(['Profile', 'Workout', 'Diet', 'Progress', 'Chat'] as Tab[]).map(tab => (
+                    {(['Perfil', 'Treino', 'Dieta', 'Progresso', 'Chat'] as Tab[]).map(tab => (
                         <TabButton key={tab} label={tab} activeTab={activeTab} onClick={setActiveTab} />
                     ))}
                 </nav>

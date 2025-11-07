@@ -5,37 +5,37 @@ const API_KEY = process.env.API_KEY;
 
 if (!API_KEY) {
   // This is a fallback for development. In a real scenario, the key is expected to be set.
-  console.warn("Gemini API key not found. AI features will be disabled.");
+  console.warn("Chave da API Gemini não encontrada. Os recursos de IA serão desativados.");
 }
 
 const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
 export const generateWorkoutSuggestion = async (prompt: string): Promise<string> => {
-  if (!ai) return "AI service is not available. Please configure the API key.";
+  if (!ai) return "O serviço de IA não está disponível. Por favor, configure a chave da API.";
 
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `You are an expert personal trainer. Create a workout suggestion based on the following request. Provide a concise, actionable plan. Request: "${prompt}"`,
+      contents: `Você é um personal trainer especialista. Crie uma sugestão de treino com base na seguinte solicitação. Forneça um plano conciso e prático. Solicitação: "${prompt}"`,
     });
     return response.text;
   } catch (error) {
-    console.error("Error generating workout suggestion:", error);
-    return "Sorry, I couldn't generate a suggestion at this time.";
+    console.error("Erro ao gerar sugestão de treino:", error);
+    return "Desculpe, não consegui gerar uma sugestão no momento.";
   }
 };
 
 export const generateDietSuggestion = async (prompt: string): Promise<string> => {
-  if (!ai) return "AI service is not available. Please configure the API key.";
+  if (!ai) return "O serviço de IA não está disponível. Por favor, configure a chave da API.";
 
   try {
      const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `You are an expert nutritionist. Create a simple meal plan suggestion based on the following request. Focus on whole foods and provide estimated calories. Request: "${prompt}"`,
+      contents: `Você é um nutricionista especialista. Crie uma sugestão de plano alimentar simples com base na seguinte solicitação. Foque em alimentos integrais e forneça uma estimativa de calorias. Solicitação: "${prompt}"`,
     });
     return response.text;
   } catch (error) {
-    console.error("Error generating diet suggestion:", error);
-    return "Sorry, I couldn't generate a suggestion at this time.";
+    console.error("Erro ao gerar sugestão de dieta:", error);
+    return "Desculpe, não consegui gerar uma sugestão no momento.";
   }
 };

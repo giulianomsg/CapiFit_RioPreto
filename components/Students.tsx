@@ -17,7 +17,7 @@ const StudentCard: React.FC<{ student: Student; onSelect: (student: Student) => 
         student.status === 'Active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
       }`}
     >
-      {student.status}
+      {student.status === 'Active' ? 'Ativo' : 'Inativo'}
     </span>
   </div>
 );
@@ -32,9 +32,9 @@ export const Students: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Your Students</h2>
+        <h2 className="text-2xl font-bold">Seus Alunos</h2>
         <button className="bg-primary text-primary-foreground font-semibold py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors">
-          + Add Student
+          + Adicionar Aluno
         </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

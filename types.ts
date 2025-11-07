@@ -1,5 +1,5 @@
 
-export type Page = 'Dashboard' | 'Students' | 'Workouts' | 'Diet Plans' | 'Messages' | 'Settings';
+export type Page = 'Painel' | 'Alunos' | 'Treinos' | 'Planos de Dieta' | 'Mensagens' | 'Configurações';
 
 export interface Exercise {
   id: string;

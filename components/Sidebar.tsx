@@ -35,11 +35,11 @@ const NavItem: React.FC<{
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage }) => {
   const navItems: { label: Page; icon: React.ReactNode }[] = [
-    { label: 'Dashboard', icon: ICONS.dashboard },
-    { label: 'Students', icon: ICONS.students },
-    { label: 'Workouts', icon: ICONS.workouts },
-    { label: 'Diet Plans', icon: ICONS.diet },
-    { label: 'Messages', icon: ICONS.messages },
+    { label: 'Painel', icon: ICONS.dashboard },
+    { label: 'Alunos', icon: ICONS.students },
+    { label: 'Treinos', icon: ICONS.workouts },
+    { label: 'Planos de Dieta', icon: ICONS.diet },
+    { label: 'Mensagens', icon: ICONS.messages },
   ];
 
   return (
@@ -66,9 +66,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage })
       <div>
         <NavItem
           icon={ICONS.settings}
-          label="Settings"
-          isActive={currentPage === 'Settings'}
-          onClick={() => setCurrentPage('Settings')}
+          label="Configurações"
+          isActive={currentPage === 'Configurações'}
+          onClick={() => setCurrentPage('Configurações')}
         />
       </div>
     </aside>

@@ -8,7 +8,7 @@ import { ThemeContext } from './components/ThemeContext';
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState('dark');
-  const [currentPage, setCurrentPage] = useState<Page>('Dashboard');
+  const [currentPage, setCurrentPage] = useState<Page>('Painel');
 
   useEffect(() => {
     const root = document.documentElement;
@@ -25,9 +25,9 @@ const App: React.FC = () => {
   
   const renderContent = () => {
     switch (currentPage) {
-      case 'Dashboard':
+      case 'Painel':
         return <Dashboard />;
-      case 'Students':
+      case 'Alunos':
         return <Students />;
       default:
         return <Dashboard />;
