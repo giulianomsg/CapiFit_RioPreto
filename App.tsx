@@ -9,45 +9,36 @@ import { Messages } from './components/Messages';
 import { Settings } from './components/Settings';
 import type { Page, Student, WorkoutPlan, DietPlan } from './types';
 import { ThemeContext } from './components/ThemeContext';
+import { apiService } from './services/apiService';
 
 const App: React.FC = () => {
   const [theme, setTheme] = useState('dark');
   const [currentPage, setCurrentPage] = useState<Page>('Painel');
+  const [isLoading, setIsLoading] = useState(true);
   
-  // State management for all app data
+  // State management for all app data, fetched from backend
   const [students, setStudents] = useState<Student[]>([]);
   const [workoutPlans, setWorkoutPlans] = useState<WorkoutPlan[]>([]);
   const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
 
-  // Load data from localStorage on initial render
+  // Load all data from backend on initial render
   useEffect(() => {
-    try {
-      const storedStudents = localStorage.getItem('capifit_students');
-      if (storedStudents) setStudents(JSON.parse(storedStudents));
-
-      const storedWorkouts = localStorage.getItem('capifit_workouts');
-      if (storedWorkouts) setWorkoutPlans(JSON.parse(storedWorkouts));
-
-      const storedDiets = localStorage.getItem('capifit_diets');
-      if (storedDiets) setDietPlans(JSON.parse(storedDiets));
-    } catch (error) {
-      console.error("Failed to parse data from localStorage", error);
-    }
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await apiService.getAllData();
+        setStudents(data.students);
+        setWorkoutPlans(data.workoutPlans);
+        setDietPlans(data.dietPlans);
+      } catch (error) {
+        console.error("Failed to fetch data from backend", error);
+        // TODO: Mostrar um estado de erro para o usuário
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, []);
-
-  // Persist data to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('capifit_students', JSON.stringify(students));
-  }, [students]);
-
-  useEffect(() => {
-    localStorage.setItem('capifit_workouts', JSON.stringify(workoutPlans));
-  }, [workoutPlans]);
-
-  useEffect(() => {
-    localStorage.setItem('capifit_diets', JSON.stringify(dietPlans));
-  }, [dietPlans]);
-
 
   useEffect(() => {
     const root = document.documentElement;
@@ -63,57 +54,59 @@ const App: React.FC = () => {
   const themeContextValue = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
   
   // --- Data Handling Functions ---
-  const handleAddStudent = (studentData: Omit<Student, 'id' | 'progressPhotos' | 'measurements'>) => {
-    const newStudent: Student = {
-      ...studentData,
-      id: `s_${Date.now()}`,
-      progressPhotos: [],
-      measurements: [{ date: new Date().toISOString().split('T')[0], weight: 0 }],
-    };
-    setStudents(prev => [...prev, newStudent]);
+  const handleAddStudent = async (studentData: Omit<Student, 'id' | 'progressPhotos' | 'measurements'>) => {
+    try {
+      const newStudent = await apiService.addStudent(studentData);
+      setStudents(prev => [...prev, newStudent]);
+    } catch (error) {
+      console.error("Failed to add student:", error);
+    }
   };
 
-  const handleAddWorkoutPlan = (plan: { name: string; details: string }) => {
-    const newPlan: WorkoutPlan = {
-      id: `wp_${Date.now()}`,
-      name: plan.name,
-      details: plan.details,
-    };
-    setWorkoutPlans(prev => [...prev, newPlan]);
+  const handleAddWorkoutPlan = async (plan: { name: string; details: string }) => {
+    try {
+      const newPlan = await apiService.addWorkoutPlan(plan);
+      setWorkoutPlans(prev => [...prev, newPlan]);
+    } catch (error) {
+      console.error("Failed to add workout plan:", error);
+    }
   };
   
-  const handleAddDietPlan = (plan: { name: string; details: string }) => {
-    const newPlan: DietPlan = {
-      id: `dp_${Date.now()}`,
-      name: plan.name,
-      details: plan.details,
-    };
-    setDietPlans(prev => [...prev, newPlan]);
-  };
-
-  const handleAssignWorkoutPlan = (studentId: string, plan: { name: string; details: string }) => {
-      const newPlan: WorkoutPlan = {
-        id: `wp_${Date.now()}`,
-        name: plan.name,
-        details: plan.details,
-      };
-      // Add to global plans if it's a new unique plan, or just use an existing one
-      setWorkoutPlans(prev => [...prev, newPlan]);
-      setStudents(prev => prev.map(s => s.id === studentId ? { ...s, workoutPlanId: newPlan.id } : s));
-  };
-
-  const handleAssignDietPlan = (studentId: string, plan: { name: string; details: string }) => {
-      const newPlan: DietPlan = {
-        id: `dp_${Date.now()}`,
-        name: plan.name,
-        details: plan.details,
-      };
+  const handleAddDietPlan = async (plan: { name: string; details: string }) => {
+    try {
+      const newPlan = await apiService.addDietPlan(plan);
       setDietPlans(prev => [...prev, newPlan]);
-      setStudents(prev => prev.map(s => s.id === studentId ? { ...s, dietPlanId: newPlan.id } : s));
+    } catch (error) {
+      console.error("Failed to add diet plan:", error);
+    }
+  };
+
+  const handleAssignWorkoutPlan = async (studentId: string, plan: { name: string; details: string }) => {
+    try {
+        const { updatedStudent, newPlan } = await apiService.assignWorkoutPlan(studentId, plan);
+        setWorkoutPlans(prev => [...prev, newPlan]);
+        setStudents(prev => prev.map(s => s.id === studentId ? updatedStudent : s));
+    } catch (error) {
+        console.error("Failed to assign workout plan:", error);
+    }
+  };
+
+  const handleAssignDietPlan = async (studentId: string, plan: { name: string; details: string }) => {
+    try {
+        const { updatedStudent, newPlan } = await apiService.assignDietPlan(studentId, plan);
+        setDietPlans(prev => [...prev, newPlan]);
+        setStudents(prev => prev.map(s => s.id === studentId ? updatedStudent : s));
+    } catch (error) {
+        console.error("Failed to assign diet plan:", error);
+    }
   };
 
 
   const renderContent = () => {
+    if (isLoading) {
+      return <div className="flex justify-center items-center h-full"><p>Carregando dados...</p></div>;
+    }
+
     switch (currentPage) {
       case 'Painel':
         return <Dashboard students={students} />;

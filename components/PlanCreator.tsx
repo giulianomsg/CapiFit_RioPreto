@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { generateWorkoutSuggestion, generateDietSuggestion } from '../services/geminiService';
+import { apiService } from '../services/apiService';
 import { ICONS } from '../constants';
 
 interface PlanCreatorProps {
@@ -22,12 +21,11 @@ export const PlanCreator: React.FC<PlanCreatorProps> = ({ type, studentName, onC
     setIsLoading(true);
     setAiSuggestion('');
     try {
-      const suggestion = type === 'Workout'
-        ? await generateWorkoutSuggestion(aiPrompt)
-        : await generateDietSuggestion(aiPrompt);
-      setAiSuggestion(suggestion);
+      const response = await apiService.getAiSuggestion(type, aiPrompt);
+      setAiSuggestion(response.suggestion);
     } catch (error) {
-      setAiSuggestion('Falha ao gerar sugestão. Por favor, tente novamente.');
+      console.error("Error fetching AI suggestion:", error);
+      setAiSuggestion('Falha ao gerar sugestão. Verifique o console do servidor backend.');
     } finally {
       setIsLoading(false);
     }
