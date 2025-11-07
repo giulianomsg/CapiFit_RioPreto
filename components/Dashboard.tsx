@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MOCK_STUDENTS } from '../constants';
 
@@ -20,7 +19,7 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Bem-vindo de volta, Treinador!</h1>
+        <h1 className="text-3xl font-bold mb-2">Bem-vindo ao CapiFit, Treinador!</h1>
         <p className="text-gray-500 dark:text-gray-400">Aqui está um resumo da sua atividade.</p>
       </div>
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ICONS } from '../constants';
 import type { Page } from '../types';
@@ -47,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, setCurrentPage })
       <div>
         <div className="flex items-center mb-8 px-2">
           {ICONS.logo}
-          <h1 className="text-xl font-bold ml-2 text-light-text dark:text-dark-text">FitTrack Pro</h1>
+          <h1 className="text-xl font-bold ml-2 text-light-text dark:text-dark-text">CapiFit</h1>
         </div>
         <nav>
           <ul className="space-y-2">
