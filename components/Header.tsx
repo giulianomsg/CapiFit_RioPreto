@@ -5,9 +5,10 @@ import type { Page } from '../types';
 
 interface HeaderProps {
   currentPage: Page;
+  onLogout: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ currentPage }) => {
+export const Header: React.FC<HeaderProps> = ({ currentPage, onLogout }) => {
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   return (
@@ -38,12 +39,15 @@ export const Header: React.FC<HeaderProps> = ({ currentPage }) => {
           {ICONS.bell}
         </button>
 
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
           <img
             src="https://picsum.photos/seed/trainer/200/200"
             alt="Treinador"
             className="w-10 h-10 rounded-full object-cover"
           />
+          <button onClick={onLogout} className="text-sm font-medium text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary-light transition-colors">
+            Sair
+          </button>
         </div>
       </div>
     </header>

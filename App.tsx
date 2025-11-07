@@ -1,26 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { AuthPage } from './pages/AuthPage';
+import { DashboardLayout } from './DashboardLayout';
 
 const App: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken');
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
+
+  const handleLoginSuccess = (newToken: string) => {
+    setToken(newToken);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    setToken(null);
+  };
+
   return (
-    <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh', 
-        backgroundColor: '#111827', 
-        color: 'white',
-        fontFamily: 'sans-serif',
-        textAlign: 'center'
-      }}>
-      <h1 style={{ fontSize: '3rem', marginBottom: '1rem' }}>CapiFit</h1>
-      <p style={{ fontSize: '1.2rem', color: '#9CA3AF' }}>
-        Frontend da Aplicação CapiFit.
-      </p>
-      <p style={{ marginTop: '2rem', color: '#6B7280' }}>
-        O backend está sendo construído. Esta interface será desenvolvida para consumir a nova API RESTful.
-      </p>
-    </div>
+    <>
+      {token ? (
+        <DashboardLayout onLogout={handleLogout} />
+      ) : (
+        <AuthPage onLoginSuccess={handleLoginSuccess} />
+      )}
+    </>
   );
 };
 
